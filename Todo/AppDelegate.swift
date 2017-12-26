@@ -3,7 +3,7 @@
 //  Todo
 //
 //  Created by Sarvad shetty on 12/25/17.
-//  Copyright © 2017 Sarvad shetty. All rights reserved.
+//  Copyright © 2017 Sarvad shetty. All rights reserved.Sea
 //
 
 import UIKit
@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! as String)
+        //^ to find the direction of the sandbox of the simulator
         return true
     }
 
