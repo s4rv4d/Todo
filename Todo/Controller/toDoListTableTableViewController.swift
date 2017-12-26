@@ -18,9 +18,6 @@ class toDoListTableTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        if let items = defaults.array(forKey: "TodoListArray") as? [String]{
-//            itemArray = items
-//        }
         let newItem = Item()
         newItem.title = "first"
         itemArray.append(newItem)
@@ -28,6 +25,11 @@ class toDoListTableTableViewController: UITableViewController {
         let newItem2 = Item()
         newItem2.title = "lol"
         itemArray.append(newItem2)
+        
+        
+        if let items = defaults.array(forKey: "TodoListArray") as? [Item]{
+            itemArray = items
+            }
     }
 
 
@@ -92,21 +94,30 @@ class toDoListTableTableViewController: UITableViewController {
    
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         var textField = UITextField()
+        
         let alert1 = UIAlertController(title: "Add Item?", message: "", preferredStyle: .alert)
+        
         let action1 = UIAlertAction(title: "Add item", style: .default) { (action) in
             if textField.text != ""{
                 let newItem = Item()
+                
                 newItem.title = textField.text!
-            self.itemArray.append(newItem)
+                
+                self.itemArray.append(newItem)
+                
                 self.defaults.set(self.itemArray, forKey: "TodoListArray")
+                
                 self.tableView.reloadData()
             }
             else{
                 let alert2 = UIAlertController(title: "enter something u noob", message: "", preferredStyle: .alert)
+                
                 let action2 = UIAlertAction(title: "retry", style: .default, handler: { (actionlol) in
+                    
                     self.present(alert1, animated: true, completion: nil)
                 })
                 alert2.addAction(action2)
+                
                 self.present(alert2, animated: true, completion: nil)
             }
         }
