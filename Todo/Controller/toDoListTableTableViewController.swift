@@ -58,12 +58,18 @@ class toDoListTableTableViewController: UITableViewController {
         //instead of using this ^ we can also use this v
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
-        if item.done == true {
-            cell.accessoryType = .checkmark
-        }
-        else{
-            cell.accessoryType = .none
-        }
+        
+        
+//        if item.done == true {
+//            cell.accessoryType = .checkmark
+//        }
+//        else{
+//            cell.accessoryType = .none
+//        }
+        
+        //u could do this ^ or do using ternary statement ?:
+        cell.accessoryType = item.done == true ? .checkmark : .none
+        
         return cell
     }
  
@@ -77,7 +83,6 @@ class toDoListTableTableViewController: UITableViewController {
 //            itemArray[indexPath.row].done = false
 //        }
         //u could do this^ or this v
-        
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         tableView.reloadData()
