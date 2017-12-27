@@ -12,24 +12,24 @@ class toDoListTableTableViewController: UITableViewController {
     
     
     var itemArray = [Item]()
-    let defaults = UserDefaults.standard
+    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let newItem = Item()
-        newItem.title = "first"
-        itemArray.append(newItem)
+        let newitem = Item()
+        newitem.title = "hi"
+        itemArray.append(newitem)
+      
         
-        let newItem2 = Item()
-        newItem2.title = "lol"
-        itemArray.append(newItem2)
+//        if let items = defaults.array(forKey: "TodoListArray") as? [Item]{
+//            itemArray = items
+//            }
+        loadData()
         
-        
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item]{
-            itemArray = items
-            }
     }
 
 
@@ -71,7 +71,7 @@ class toDoListTableTableViewController: UITableViewController {
         
         //u could do this ^ or do using ternary statement ?:
         cell.accessoryType = item.done == true ? .checkmark : .none
-        
+//        saveData()
         return cell
     }
  
@@ -87,8 +87,8 @@ class toDoListTableTableViewController: UITableViewController {
         //u could do this^ or this v
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        tableView.reloadData()
         
+        saveData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
    
@@ -105,9 +105,7 @@ class toDoListTableTableViewController: UITableViewController {
                 
                 self.itemArray.append(newItem)
                 
-                self.defaults.set(self.itemArray, forKey: "TodoListArray")
-                
-                self.tableView.reloadData()
+                   self.saveData()
             }
             else{
                 let alert2 = UIAlertController(title: "enter something u noob", message: "", preferredStyle: .alert)
@@ -127,6 +125,33 @@ class toDoListTableTableViewController: UITableViewController {
             textField = alertTextField
         }
         present(alert1, animated: true, completion: nil)
+    }
+    
+    //MARK: functions
+    func saveData(){
+        
+           let encoder = PropertyListEncoder()
+        do{
+            let data = try encoder.encode(itemArray)
+            try data.write(to:dataFilePath!)
+        }
+        catch{
+            print("error encoding item array, \(error)")
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func loadData(){
+        if let data1 = try? Data(contentsOf: dataFilePath!){
+            let decoder = PropertyListDecoder()
+            do{
+                itemArray = try decoder.decode([Item].self, from: data1)
+            }
+            catch{
+                print("error while decoding ,\(error)")
+            }
+        }
     }
     
 }
