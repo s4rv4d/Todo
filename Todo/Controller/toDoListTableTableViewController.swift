@@ -103,14 +103,14 @@ class toDoListTableTableViewController: UITableViewController{
         tableView.reloadData()
     }
     
-    func loadData(){
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
+    func loadData(with request:NSFetchRequest<Item> = Item.fetchRequest()){
         do{
             itemArray = try context.fetch(request)
         }
         catch{
             print("error while fetching data from context ,\(error)")
         }
+          tableView.reloadData()
     }
     
 }
@@ -120,21 +120,26 @@ extension toDoListTableTableViewController : UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let request : NSFetchRequest<Item> = Item.fetchRequest()
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        request.predicate = predicate
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         //now to sort using sort descriptor
-        
-        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-        request.sortDescriptors = [sortDescriptor]
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         //now to fetch the data
-        do{
-            itemArray = try context.fetch(request)
+        loadData(with: request)
+      
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0
+        {
+            loadData()
+          
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
         }
-        catch{
-            print("error while fetching data from context ,\(error)")
-        }
-        tableView.reloadData()
+        //now to use resign first responder faster we put it in the main thread by following command p.s. we use async to make it asynchronous
+     
     }
 
 }
