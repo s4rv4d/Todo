@@ -7,33 +7,24 @@
 //
 
 import UIKit
+import CoreData
 
 class toDoListTableTableViewController: UITableViewController {
     
     
     var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     
+    
+    let context = {UIApplication.shared.delegate as! AppDelegate}().persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let newitem = Item()
-        newitem.title = "hi"
-        itemArray.append(newitem)
-      
-        
-//        if let items = defaults.array(forKey: "TodoListArray") as? [Item]{
-//            itemArray = items
-//            }
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadData()
         
     }
-
-
-
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -49,43 +40,19 @@ class toDoListTableTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "toDoItemCell", for: indexPath)
-        // Configure the cell...
-//        cell.textLabel?.text = itemArray[indexPath.row].title
-//        if itemArray[indexPath.row].done == true {
-//            cell.accessoryType = .checkmark
-//        }
-//        else{
-//            cell.accessoryType = .none
-//        }
-        //instead of using this ^ we can also use this v
+
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
-        
-        
-//        if item.done == true {
-//            cell.accessoryType = .checkmark
-//        }
-//        else{
-//            cell.accessoryType = .none
-//        }
-        
-        //u could do this ^ or do using ternary statement ?:
+
         cell.accessoryType = item.done == true ? .checkmark : .none
-//        saveData()
+
         return cell
     }
  
     //MARK: TableView Delegate methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if itemArray[indexPath.row].done == false {
-//            itemArray[indexPath.row].done = true
-//        }
-//        else{
-//            itemArray[indexPath.row].done = false
-//        }
-        //u could do this^ or this v
-        
+
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         saveData()
@@ -99,9 +66,11 @@ class toDoListTableTableViewController: UITableViewController {
         
         let action1 = UIAlertAction(title: "Add item", style: .default) { (action) in
             if textField.text != ""{
-                let newItem = Item()
+               
+                let newItem = Item(context: self.context)
                 
                 newItem.title = textField.text!
+                newItem.done = false
                 
                 self.itemArray.append(newItem)
                 
@@ -127,30 +96,26 @@ class toDoListTableTableViewController: UITableViewController {
         present(alert1, animated: true, completion: nil)
     }
     
-    //MARK: functions
+    //MARK: Model manipulation
     func saveData(){
         
-           let encoder = PropertyListEncoder()
         do{
-            let data = try encoder.encode(itemArray)
-            try data.write(to:dataFilePath!)
+           try context.save()
         }
         catch{
-            print("error encoding item array, \(error)")
+            print("error saving context , \(error)")
         }
         
         tableView.reloadData()
     }
     
     func loadData(){
-        if let data1 = try? Data(contentsOf: dataFilePath!){
-            let decoder = PropertyListDecoder()
-            do{
-                itemArray = try decoder.decode([Item].self, from: data1)
-            }
-            catch{
-                print("error while decoding ,\(error)")
-            }
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        do{
+            itemArray = try context.fetch(request)
+        }
+        catch{
+            print("error while fetching data from context ,\(error)")
         }
     }
     
