@@ -9,14 +9,8 @@
 import UIKit
 import CoreData
 
-class toDoListTableTableViewController: UITableViewController {
-    
-    
+class toDoListTableTableViewController: UITableViewController{
     var itemArray = [Item]()
-    
-    
-    
-    
     let context = {UIApplication.shared.delegate as! AppDelegate}().persistentContainer.viewContext
 
     override func viewDidLoad() {
@@ -119,4 +113,28 @@ class toDoListTableTableViewController: UITableViewController {
         }
     }
     
+}
+
+extension toDoListTableTableViewController : UISearchBarDelegate {
+    //MARK: UISearchBar Delegate function
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.predicate = predicate
+        //now to sort using sort descriptor
+        
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
+        
+        //now to fetch the data
+        do{
+            itemArray = try context.fetch(request)
+        }
+        catch{
+            print("error while fetching data from context ,\(error)")
+        }
+        tableView.reloadData()
+    }
+
 }
