@@ -34,6 +34,18 @@ class CategoryViewController: UITableViewController {
         cell.textLabel?.text = categoryArray[indexPath.row].name
         return cell
     }
+    
+    //MARK: Tableview Delgate methods
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! toDoListTableTableViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+        }
+    }
 
     //MARK: IBActions
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
