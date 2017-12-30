@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		404751071FF784B40094BB4D /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404751061FF784B40094BB4D /* CategoryViewController.swift */; };
 		40A571FE1FF12F0D00B76A9A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A571FD1FF12F0D00B76A9A /* AppDelegate.swift */; };
 		40A572031FF12F0D00B76A9A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40A572011FF12F0D00B76A9A /* Main.storyboard */; };
 		40A572051FF12F0D00B76A9A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40A572041FF12F0D00B76A9A /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		404751061FF784B40094BB4D /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		40A571FA1FF12F0D00B76A9A /* Todo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40A571FD1FF12F0D00B76A9A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		40A572021FF12F0D00B76A9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -40,6 +42,7 @@
 		4060D29C1FF2AA6500C8E99B /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				404751061FF784B40094BB4D /* CategoryViewController.swift */,
 				40A5720F1FF1303800B76A9A /* toDoListTableTableViewController.swift */,
 			);
 			path = Controller;
@@ -171,6 +174,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				404751071FF784B40094BB4D /* CategoryViewController.swift in Sources */,
 				40F01AD21FF3DD36008DCB25 /* DataModel.xcdatamodeld in Sources */,
 				40A572101FF1303800B76A9A /* toDoListTableTableViewController.swift in Sources */,
 				40A571FE1FF12F0D00B76A9A /* AppDelegate.swift in Sources */,

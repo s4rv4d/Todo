@@ -11,7 +11,7 @@ import CoreData
 
 class toDoListTableTableViewController: UITableViewController{
     var itemArray = [Item]()
-    let context = {UIApplication.shared.delegate as! AppDelegate}().persistentContainer.viewContext
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +53,8 @@ class toDoListTableTableViewController: UITableViewController{
         tableView.deselectRow(at: indexPath, animated: true)
     }
    
+    //MARK: IBActions
+    
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
