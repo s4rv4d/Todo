@@ -7,16 +7,15 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class toDoListTableTableViewController: UITableViewController{
-    var itemArray = [Item]()
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
+    var itemArray: Results<Item>?
+    let realm = try! Realm()
     var selectedCategory : Category? {
         
         didSet{
-            loadData()
+           loadData()
         }
     }
 
@@ -35,17 +34,21 @@ class toDoListTableTableViewController: UITableViewController{
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return itemArray.count
+        return itemArray?.count ?? 1
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "toDoItemCell", for: indexPath)
 
-        let item = itemArray[indexPath.row]
+        if  let item = itemArray?[indexPath.row]{
         cell.textLabel?.text = item.title
 
         cell.accessoryType = item.done == true ? .checkmark : .none
+        }
+        else{
+            cell.textLabel?.text = "No items added"
+        }
 
         return cell
     }
@@ -53,10 +56,22 @@ class toDoListTableTableViewController: UITableViewController{
     //MARK: TableView Delegate methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        saveData()
+        if let item = itemArray?[indexPath.row]{
+            
+            do{
+                try realm.write {
+                    item.done = !item.done
+                    //to delete use this v
+//                    realm.delete(item)
+                }
+            }
+            catch{
+                print("error while updating,\(error)")
+            }
+        }
+   
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
    
@@ -67,18 +82,24 @@ class toDoListTableTableViewController: UITableViewController{
         
         let alert1 = UIAlertController(title: "Add Item?", message: "", preferredStyle: .alert)
         
-        let action1 = UIAlertAction(title: "Add item", style: .default) { (action) in
+        let action1 = UIAlertAction(title: "Add", style: .default) { (action) in
             if textField.text != ""{
-               
-                let newItem = Item(context: self.context)
+
+                if let currentCategory = self.selectedCategory{
+                    do{
+                        try self.realm.write {
+                            let newItem = Item()
+                            newItem.title = textField.text!
+                            currentCategory.item.append(newItem)
+                        }
+                    }
+                    catch{
+                        print("error while saving..,\(error)")
+                    }
+                }
+            self.tableView.reloadData()
+             
                 
-                newItem.title = textField.text!
-                newItem.done = false
-                newItem.parentCategory = self.selectedCategory
-                
-                self.itemArray.append(newItem)
-                
-                   self.saveData()
             }
             else{
                 let alert2 = UIAlertController(title: "enter something u noob", message: "", preferredStyle: .alert)
@@ -101,67 +122,42 @@ class toDoListTableTableViewController: UITableViewController{
     }
     
     //MARK: Model manipulation
-    func saveData(){
-        
-        do{
-           try context.save()
-        }
-        catch{
-            print("error saving context , \(error)")
-        }
-        
-        tableView.reloadData()
-    }
-    
-    func loadData(with request:NSFetchRequest<Item> = Item.fetchRequest(),with predicate: NSPredicate? = nil){
-        
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        if let additionalPredicate = predicate {
-            
-                request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
-        }
-        else{
-            request.predicate = categoryPredicate
-        }
-        
-        do{
-            itemArray = try context.fetch(request)
-        }
-        catch{
-            print("error while fetching data from context ,\(error)")
-        }
+
+    func loadData(){
+
+            itemArray = selectedCategory?.item.sorted(byKeyPath: "title", ascending: true)
           tableView.reloadData()
     }
     
 }
 
-extension toDoListTableTableViewController : UISearchBarDelegate {
-    //MARK: UISearchBar Delegate function
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        request.predicate = predicate
-        //now to sort using sort descriptor
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        //now to fetch the data
-        loadData(with: request,with: predicate )
-      
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0
-        {
-            loadData()
-          
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-            }
-        }
-        //now to use resign first responder faster we put it in the main thread by following command p.s. we use async to make it asynchronous
-     
-    }
+//extension toDoListTableTableViewController : UISearchBarDelegate {
+//    //MARK: UISearchBar Delegate function
+//
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        let request : NSFetchRequest<Item> = Item.fetchRequest()
+//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        request.predicate = predicate
+//        //now to sort using sort descriptor
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//
+//        //now to fetch the data
+//        loadData(with: request,with: predicate )
+//
+//    }
+//
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if searchBar.text?.count == 0
+//        {
+//            loadData()
+//
+//            DispatchQueue.main.async {
+//                searchBar.resignFirstResponder()
+//            }
+//        }
+//        //now to use resign first responder faster we put it in the main thread by following command p.s. we use async to make it asynchronous
+//
+//    }
+//
+//}
 
-}
