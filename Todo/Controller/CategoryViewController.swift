@@ -20,6 +20,9 @@ class CategoryViewController: UITableViewController {
           print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         load()
     }
+    
+    
+    
     //MARK: Tableview Datasource methods
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -35,6 +38,9 @@ class CategoryViewController: UITableViewController {
         return cell
     }
     
+    
+    
+    
     //MARK: Tableview Delgate methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
@@ -47,6 +53,10 @@ class CategoryViewController: UITableViewController {
         }
     }
 
+    
+    
+    
+    
     //MARK: IBActions
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -81,6 +91,11 @@ class CategoryViewController: UITableViewController {
         }
         present(alert1, animated: true, completion: nil)
     }
+    
+    
+    
+    
+    
     //MARK: Datamodel manipulation
     
     

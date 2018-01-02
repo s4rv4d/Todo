@@ -12,6 +12,9 @@ import RealmSwift
 class toDoListTableTableViewController: UITableViewController{
     var itemArray: Results<Item>?
     let realm = try! Realm()
+    let date = NSDate()
+  
+    
     var selectedCategory : Category? {
         
         didSet{
@@ -19,12 +22,16 @@ class toDoListTableTableViewController: UITableViewController{
         }
     }
 
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        
     }
+    
+    
+    
+    
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -53,6 +60,10 @@ class toDoListTableTableViewController: UITableViewController{
         return cell
     }
  
+    
+    
+    
+    
     //MARK: TableView Delegate methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -75,6 +86,10 @@ class toDoListTableTableViewController: UITableViewController{
         tableView.deselectRow(at: indexPath, animated: true)
     }
    
+    
+    
+    
+    
     //MARK: IBActions
     
     @IBAction func addItem(_ sender: UIBarButtonItem) {
@@ -84,12 +99,12 @@ class toDoListTableTableViewController: UITableViewController{
         
         let action1 = UIAlertAction(title: "Add", style: .default) { (action) in
             if textField.text != ""{
-
                 if let currentCategory = self.selectedCategory{
                     do{
                         try self.realm.write {
                             let newItem = Item()
                             newItem.title = textField.text!
+                            newItem.date = self.date as Date!
                             currentCategory.item.append(newItem)
                         }
                     }
@@ -98,6 +113,7 @@ class toDoListTableTableViewController: UITableViewController{
                     }
                 }
             self.tableView.reloadData()
+               // self.loadData()
              
                 
             }
@@ -121,6 +137,9 @@ class toDoListTableTableViewController: UITableViewController{
         present(alert1, animated: true, completion: nil)
     }
     
+    
+    
+    
     //MARK: Model manipulation
 
     func loadData(){
@@ -131,33 +150,31 @@ class toDoListTableTableViewController: UITableViewController{
     
 }
 
-//extension toDoListTableTableViewController : UISearchBarDelegate {
-//    //MARK: UISearchBar Delegate function
-//
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let request : NSFetchRequest<Item> = Item.fetchRequest()
-//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//        request.predicate = predicate
-//        //now to sort using sort descriptor
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-//        //now to fetch the data
-//        loadData(with: request,with: predicate )
-//
-//    }
-//
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        if searchBar.text?.count == 0
-//        {
-//            loadData()
-//
-//            DispatchQueue.main.async {
-//                searchBar.resignFirstResponder()
-//            }
-//        }
-//        //now to use resign first responder faster we put it in the main thread by following command p.s. we use async to make it asynchronous
-//
-//    }
-//
-//}
+extension toDoListTableTableViewController : UISearchBarDelegate {
+    
+    
+    
+    //MARK: UISearchBar Delegate function
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        itemArray = itemArray?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "date", ascending: true)
+        tableView.reloadData()
+
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0
+        {
+            loadData()
+
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+        //now to use resign first responder faster we put it in the main thread by following command p.s. we use async to make it asynchronous
+
+    }
+
+}
 
