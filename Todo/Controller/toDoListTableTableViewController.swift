@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class toDoListTableTableViewController: UITableViewController{
+class toDoListTableTableViewController: SwipeTableViewController{
     var itemArray: Results<Item>?
     let realm = try! Realm()
     let date = NSDate()
@@ -26,6 +26,7 @@ class toDoListTableTableViewController: UITableViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //tableView.rowHeight = 80.0
     }
     
     
@@ -46,7 +47,7 @@ class toDoListTableTableViewController: UITableViewController{
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "toDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
 
         if  let item = itemArray?[indexPath.row]{
         cell.textLabel?.text = item.title
@@ -74,7 +75,7 @@ class toDoListTableTableViewController: UITableViewController{
                 try realm.write {
                     item.done = !item.done
                     //to delete use this v
-//                    realm.delete(item)
+                    // realm.delete(item)
                 }
             }
             catch{
@@ -148,7 +149,22 @@ class toDoListTableTableViewController: UITableViewController{
           tableView.reloadData()
     }
     
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let itemSelected = itemArray?[indexPath.row]{
+            do{
+                try realm.write {
+                    realm.delete(itemSelected)
+                }
+            }catch{
+                print("error while deleting,\(error)")
+            }
+        }
+    }
+    
 }
+
+
 
 extension toDoListTableTableViewController : UISearchBarDelegate {
     
