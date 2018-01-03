@@ -8,12 +8,14 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class toDoListTableTableViewController: SwipeTableViewController{
     var itemArray: Results<Item>?
     let realm = try! Realm()
     let date = NSDate()
   
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var selectedCategory : Category? {
         
@@ -27,8 +29,29 @@ class toDoListTableTableViewController: SwipeTableViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         //tableView.rowHeight = 80.0
+        tableView.separatorStyle = .none
     }
     
+    //MARK: customising nav bar and search bar
+    override func viewWillAppear(_ animated: Bool) {
+        title = selectedCategory!.name
+        guard let colr = selectedCategory?.color else{fatalError()}
+        updateNavBar(with: colr)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(with: "3AD6FF")
+    }
+    
+    //MARK: Nav bar setup
+    func updateNavBar(with colorHexCode:String){
+        guard let navBar = navigationController?.navigationBar else {fatalError("navigation controller is nil")}
+        guard let navBarColor = UIColor(hexString: colorHexCode) else{fatalError()}
+        navBar.barTintColor = navBarColor
+        navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+        navBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+        searchBar.barTintColor = navBarColor
+    }
     
     
     
@@ -50,9 +73,13 @@ class toDoListTableTableViewController: SwipeTableViewController{
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
 
         if  let item = itemArray?[indexPath.row]{
-        cell.textLabel?.text = item.title
-
-        cell.accessoryType = item.done == true ? .checkmark : .none
+            cell.textLabel?.text = item.title
+            if  let clr = UIColor(hexString: item.colorItem)?.darken(byPercentage: CGFloat(indexPath.row)/CGFloat((itemArray?.count)!)){
+                cell.backgroundColor = clr
+                cell.textLabel?.textColor = ContrastColorOf(clr, returnFlat: true)
+            }
+            cell.accessoryType = item.done == true ? .checkmark : .none
+           
         }
         else{
             cell.textLabel?.text = "No items added"
@@ -106,6 +133,9 @@ class toDoListTableTableViewController: SwipeTableViewController{
                             let newItem = Item()
                             newItem.title = textField.text!
                             newItem.date = self.date as Date!
+                            if let color = self.selectedCategory?.color {
+                                newItem.colorItem = color
+                            }
                             currentCategory.item.append(newItem)
                         }
                     }
