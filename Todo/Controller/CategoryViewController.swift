@@ -20,7 +20,7 @@ class CategoryViewController: SwipeTableViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-          print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+          //print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         load()
         //tableView.rowHeight = 80.0
         tableView.separatorStyle = .none
@@ -53,6 +53,10 @@ class CategoryViewController: SwipeTableViewController{
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
+    
+    
+    
+    //MARK: Prepare segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! toDoListTableTableViewController
         
