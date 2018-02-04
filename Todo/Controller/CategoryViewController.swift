@@ -23,6 +23,7 @@ class CategoryViewController: SwipeTableViewController{
           //print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         load()
         //tableView.rowHeight = 80.0
+        
         tableView.separatorStyle = .none
     }
     
@@ -126,6 +127,7 @@ class CategoryViewController: SwipeTableViewController{
     
     func load(){
         categoryArray = realm.objects(Category.self)
+        tableView.reloadData()
 }
     
     

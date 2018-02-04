@@ -30,6 +30,7 @@ class toDoListTableTableViewController: SwipeTableViewController{
         super.viewDidLoad()
         //tableView.rowHeight = 80.0
         tableView.separatorStyle = .none
+        tableView.reloadData()
     }
     
     //MARK: customising nav bar and search bar
